@@ -82,6 +82,10 @@ Per-project LSP settings can be tuned in `.zed/settings.json`:
 - Queries live in [`languages/OpenFOAM/`](languages/OpenFOAM/) (`highlights.scm`, `folds.scm`, `injections.scm`, `locals.scm`, `outline.scm`, `indents.scm`)
 - Extension entry point: [`src/lib.rs`](src/lib.rs)
 
+## Icon
+
+The extension icon is derived from the [OpenFOAM wordmark](https://doc.openfoam.com/2606/img/openfoam-wordmark.svg) (OpenFOAM is a registered trademark of OpenCFD Ltd / ESI Group; this extension is not affiliated with or endorsed by OpenCFD).
+
 ## License
 
 [MIT](LICENSE)
