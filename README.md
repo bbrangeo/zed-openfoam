@@ -8,15 +8,20 @@
 - **Code folding** and bracket matching for dictionaries and lists
 - **Code outline** (dictionaries and key–value pairs)
 - **Auto-indentation**
-- **Language server** ([`foam-language-server`](https://github.com/FoamScience/foam-language-server), installed automatically via npm) providing:
-  - completion (macros, keywords)
+- **Language server** ([`foam-language-server`](https://github.com/FoamScience/foam-language-server)) providing:
   - hover documentation
   - diagnostics (tree-sitter syntax errors + OpenFOAM solver log validation)
   - document symbols, highlights, references, rename, folding ranges, links
+  - minimal completion (a single `boundaryCondition` snippet — an upstream limitation)
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) ≥ 18 on your `PATH` (used to run `foam-language-server`; Zed downloads and installs the npm package automatically on first launch)
+- [Node.js](https://nodejs.org/) ≥ 18 on your `PATH` (used to run `foam-language-server`)
+
+The server is resolved in this order:
+
+1. A `foam-ls` binary already on your `PATH` (e.g. a global install or `npm link` of [upstream `master`](https://github.com/FoamScience/foam-language-server), which is fully Zed-compatible)
+2. Otherwise, Zed downloads the npm package automatically on first launch. Published npm releases (≤ 0.4.6) lag behind upstream `master` and contain bugs that crash or fail Zed's `InitializeResult` deserialization; this extension patches the compiled server in place at startup with the fixes from upstream `master` ([issue #16](https://github.com/FoamScience/foam-language-server/issues/16)), so everything works out of the box either way.
 
 ## Installation
 
@@ -52,9 +57,9 @@ myCase/
     └── fvSolution
 ```
 
-Opening the case folder (not just a single file) lets the language server index the whole case, which is required for cross-file completions and solver diagnostics.
+Opening the case folder (not just a single file) lets the language server index the whole case, which is required for cross-file features and solver diagnostics.
 
-> **Note:** published `foam-language-server` releases on npm (≤ 0.4.6) lag behind upstream `master` and contain bugs that crash or fail Zed's `InitializeResult` deserialization. This extension patches the compiled server in place at startup with the fixes from upstream `master`, so everything works out of the box.
+> **Note:** if the npm package is used (see resolution order above), published releases (≤ 0.4.6) contain bugs patched at startup — see [Requirements](#requirements).
 
 ## Configuration
 
