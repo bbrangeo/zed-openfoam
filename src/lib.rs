@@ -84,6 +84,25 @@ impl zed::Extension for FoamExtension {
             .to_string();
         self.cached_binary_path = Some(server_path.clone());
 
+        // Published foam-language-server versions (<= 0.4.6) crash in
+        // `initialize` with `Cannot read properties of undefined (reading
+        // 'uri')` when Zed does not send `workspaceFolders` (e.g. file opened
+        // outside a project). Patch the compiled server in place with the
+        // guard from upstream master:
+        //   rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;
+        let lib_path = env::current_dir()
+            .unwrap()
+            .join("node_modules/foam-language-server/lib/foam-ls.js");
+        if let Ok(source) = fs::read_to_string(&lib_path) {
+            const BUGGY: &str = "rootUri = params.workspaceFolders[0].uri;";
+            const FIXED: &str =
+                "rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;";
+            if source.contains(BUGGY) {
+                let patched = source.replace(BUGGY, FIXED);
+                let _ = fs::write(&lib_path, patched);
+            }
+        }
+
         Ok(zed::Command {
             command: zed::node_binary_path()?,
             args: vec![server_path, "--stdio".to_string()],

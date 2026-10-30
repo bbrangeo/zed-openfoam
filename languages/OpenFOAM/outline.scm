@@ -1,6 +1,10 @@
-;; Outline / structure: dictionaries and key-value pairs are symbols
+;; Outline / structure: Zed requires @name (item name) and @item captures.
+;; Dictionaries are named items; key-value pairs are anonymous items.
 (dict
-    key: (identifier) @outline-key) @outline-item
+    key: (identifier) @name) @item
+
+(dict
+    key: (string_literal) @name) @item
 
 (key_value
-    keyword: (identifier)) @outline-item
+    keyword: (identifier) @name) @item

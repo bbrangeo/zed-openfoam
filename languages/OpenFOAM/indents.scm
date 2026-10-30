@@ -1,6 +1,9 @@
-;; Indentation guide: indent inside dicts and lists
-(dict) @indent
-(list) @indent
+;; Auto-indentation: Zed documents @indent, @start and @end captures.
+;; Indent one level inside dictionaries and lists.
+(dict
+    "{" @start
+    "}"? @end) @indent
 
-["{" "("] @indent.begin
-["}" ")"] @indent.end
+(list
+    "(" @start
+    ")"? @end) @indent
