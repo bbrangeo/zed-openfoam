@@ -2,7 +2,7 @@ id = "openfoam"
 name = "OpenFOAM"
 version = "0.0.1"
 schema_version = 1
-authors = ["Boris"]
+authors = ["Boris <bbrangeo@gmail.com>"]
 description = "OpenFOAM dictionary support (controlDict, fvSchemes, fvSolution...): syntax highlighting, code folding and LSP (completion, hover docs, diagnostics) via foam-language-server."
 
 [language_servers.foam-ls]
