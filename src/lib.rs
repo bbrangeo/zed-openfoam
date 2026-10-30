@@ -87,12 +87,12 @@ impl zed::Extension for FoamExtension {
         // Published foam-language-server versions (<= 0.4.6) are incompatible
         // with Zed's InitializeResult deserializer:
         // 1. crash in `initialize` with `Cannot read properties of undefined
-        //    (reading 'uri')` when `workspaceFolders` is absent, and
+        //    (reading 'uri')` when `workspaceFolders` is absent,
         // 2. declare `completionProvider: false` (boolean), where Zed expects
-        //    a `CompletionOptions` struct.
+        //    a `CompletionOptions` struct, and
+        // 3. declare the document formatting providers as booleans, where Zed
+        //    expects option structs (upstream master omits them entirely).
         // Patch the compiled server in place with upstream master's fixes:
-        //   rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;
-        //   completionProvider: { resolveProvider: true, triggerCharacters: [...] }
         let lib_path = env::current_dir()
             .unwrap()
             .join("node_modules/foam-language-server/lib/foam-ls.js");
@@ -105,7 +105,10 @@ impl zed::Extension for FoamExtension {
                 .replace(
                     "completionProvider: false,",
                     "completionProvider: { resolveProvider: true, triggerCharacters: [\"$\", \"#\", \" \", \"\\t\"] },",
-                );
+                )
+                .replace("documentFormattingProvider: false,", "")
+                .replace("documentRangeFormattingProvider: false,", "")
+                .replace("documentOnTypeFormattingProvider: false,", "");
             if patched != source {
                 let _ = fs::write(&lib_path, patched);
             }
