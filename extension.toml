@@ -1,0 +1,17 @@
+id = "openfoam"
+name = "OpenFOAM"
+version = "0.0.1"
+schema_version = 1
+authors = ["Boris"]
+description = "OpenFOAM dictionary support (controlDict, fvSchemes, fvSolution...): syntax highlighting, code folding and LSP (completion, hover docs, diagnostics) via foam-language-server."
+
+[language_servers.foam-ls]
+name = "foam-ls"
+languages = ["OpenFOAM"]
+
+[language_servers.foam-ls.language_ids]
+"OpenFOAM" = "foam"
+
+[grammars.foam]
+repository = "https://github.com/FoamScience/tree-sitter-foam"
+rev = "f72e493dadcca6a334c113b4cbaf864460541de4"

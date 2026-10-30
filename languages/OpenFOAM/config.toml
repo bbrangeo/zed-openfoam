@@ -1,0 +1,5 @@
+name = "OpenFOAM"
+grammar = "foam"
+path_suffixes = ["foam", "OpenFOAM"]
+line_comments = ["// "]
+block_comment = ["/*", "*/"]
