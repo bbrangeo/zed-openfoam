@@ -84,21 +84,29 @@ impl zed::Extension for FoamExtension {
             .to_string();
         self.cached_binary_path = Some(server_path.clone());
 
-        // Published foam-language-server versions (<= 0.4.6) crash in
-        // `initialize` with `Cannot read properties of undefined (reading
-        // 'uri')` when Zed does not send `workspaceFolders` (e.g. file opened
-        // outside a project). Patch the compiled server in place with the
-        // guard from upstream master:
+        // Published foam-language-server versions (<= 0.4.6) are incompatible
+        // with Zed's InitializeResult deserializer:
+        // 1. crash in `initialize` with `Cannot read properties of undefined
+        //    (reading 'uri')` when `workspaceFolders` is absent, and
+        // 2. declare `completionProvider: false` (boolean), where Zed expects
+        //    a `CompletionOptions` struct.
+        // Patch the compiled server in place with upstream master's fixes:
         //   rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;
+        //   completionProvider: { resolveProvider: true, triggerCharacters: [...] }
         let lib_path = env::current_dir()
             .unwrap()
             .join("node_modules/foam-language-server/lib/foam-ls.js");
         if let Ok(source) = fs::read_to_string(&lib_path) {
-            const BUGGY: &str = "rootUri = params.workspaceFolders[0].uri;";
-            const FIXED: &str =
-                "rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;";
-            if source.contains(BUGGY) {
-                let patched = source.replace(BUGGY, FIXED);
+            let patched = source
+                .replace(
+                    "rootUri = params.workspaceFolders[0].uri;",
+                    "rootUri = params.workspaceFolders?.[0]?.uri ?? params.rootUri ?? null;",
+                )
+                .replace(
+                    "completionProvider: false,",
+                    "completionProvider: { resolveProvider: true, triggerCharacters: [\"$\", \"#\", \" \", \"\\t\"] },",
+                );
+            if patched != source {
                 let _ = fs::write(&lib_path, patched);
             }
         }
